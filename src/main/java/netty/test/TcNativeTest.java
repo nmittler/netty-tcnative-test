@@ -31,7 +31,9 @@ import java.util.List;
 public class TcNativeTest {
 
   public static void main(String[] args) throws InterruptedException {
-    printOpenSslDetails();
+    if(!printOpenSslDetails()) {
+      return;
+    }
 
     EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -72,10 +74,16 @@ public class TcNativeTest {
     }
   }
 
-  private static void printOpenSslDetails() {
-    System.out.println("available: " + OpenSsl.isAvailable());
-    System.out.println("alpn: " + OpenSsl.isAlpnSupported());
-    System.out.println("version: " + Integer.toHexString(OpenSsl.version()));
-    System.out.println("versionString: " + OpenSsl.versionString());
+  private static boolean printOpenSslDetails() {
+    System.err.println("available: " + OpenSsl.isAvailable());
+    if (OpenSsl.isAvailable()) {
+      System.err.println("alpn: " + OpenSsl.isAlpnSupported());
+      System.err.println("version: " + Integer.toHexString(OpenSsl.version()));
+      System.err.println("versionString: " + OpenSsl.versionString());
+      return true;
+    }
+
+    OpenSsl.unavailabilityCause().printStackTrace();
+    return false;
   }
 }
